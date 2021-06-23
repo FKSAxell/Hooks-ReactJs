@@ -16,7 +16,7 @@ export const Memorize = () => {
         +1
       </button>
       <button
-        className="btn btn-outline-primary ml-3"
+        className="ml-3 btn btn-outline-primary"
         onClick={() => {
           setShow(!show);
         }}
