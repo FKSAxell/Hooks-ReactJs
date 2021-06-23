@@ -1,32 +1,50 @@
-import React, { useReducer } from 'react'
+import React, { useEffect, useReducer } from 'react'
+import { useForm } from '../../hooks/useForm';
 import "./styles.css"
 import { todoReducer } from './todoReducer';
 
-const initialState = [{
-    id: new Date().getTime(),
-    desc: "Aprender React",
-    done: false,
-}]
+
+
+const init = () => {
+    return JSON.parse(localStorage.getItem("todos")) || [];
+}
 
 export const TodoApp = () => {
 
-    const [todos, dispatch] = useReducer(todoReducer, initialState);
+    const [todos, dispatch] = useReducer(todoReducer, [], init);
+    const [{ description }, handleInputChange, reset] = useForm({
+        description: ""
+    });
 
-    console.log(todos);
+    useEffect(() => {
+        localStorage.setItem("todos", JSON.stringify(todos));
+    }, [todos])
+
+    console.log(description);
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        if (description.trim().length <= 1) {
+            return;
+        }
+
         const newTodo = {
             id: new Date().getTime(),
-            desc: "Nueva Tarea",
+            desc: description,
             done: false,
         }
+
         const action = {
             type: "add",
             payload: newTodo
         }
+
         dispatch(action);
+        reset();
     }
+
+
 
     return (
         <div>
@@ -56,7 +74,10 @@ export const TodoApp = () => {
                     <h4>Agregar TODO</h4>
                     <hr />
                     <form onSubmit={handleSubmit}>
-                        <input className="form-control" type="text" name="description" placeholder="Aprender...." autoComplete="off" />
+                        <input className="form-control" type="text" name="description" placeholder="Aprender...." autoComplete="off"
+                            onChange={handleInputChange}
+                            value={description}
+                        />
                         <button type="submit" className="mt-1 btn btn-outline-primary w-100">Agregar</button>
                     </form>
                 </div>
